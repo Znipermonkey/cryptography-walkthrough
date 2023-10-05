@@ -1,3 +1,5 @@
+let bcrypt = require('bcryptjs')
+
 let userDatase = []
 
 let randomFortunes = [
@@ -24,7 +26,8 @@ module.exports = {
             return
         }
 
-        if (userObj.password === password) {
+        // if (userObj.password === password) {
+        if(bcrypt.compareSync(password, userObj.password)){
             let randomFortune = randomFortunes[Math.floor(Math.random() * randomFortunes.length)]
 
             res.send({success: true, fortune: randomFortune})
@@ -35,14 +38,16 @@ module.exports = {
     signUp: (req, res) => {
         let { email, password, firstName, lastName } = req.body
 
+        var hashedPassword = bcrypt.hashSync(password, 10);
+
         userDatase.push({
             email,
-            password,
+            password: hashedPassword,
             firstName,
             lastName,
             id: startingId++
         })
-
+        
         res.send({success: true})
     }
 }
